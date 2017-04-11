@@ -8,13 +8,13 @@ module.exports = {
 
     let mails = []
 
-    mails.push('From: "Thank you for buying" <andra.satria1@gmail.com>')
+    mails.push('From: "Cron Mail Sender" <andra.satria1@gmail.com>')
     mails.push(`To: ${data}`)
     mails.push('Content-type: text/html;charset=iso-8859-1')
     mails.push('MIME-Version: 1.0')
-    mails.push('Subject: Your checkout list')
+    mails.push('Subject: Cron Test')
     mails.push('')
-    mails.push('Get Discount up to 50% to our exclusive item !')
+    mails.push('This is a Cron Mail Sender Test')
 
     let email = mails.join('\r\n').trim(),
         base64 = new Buffer(email).toString('base64')

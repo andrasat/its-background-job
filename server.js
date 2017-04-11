@@ -4,15 +4,16 @@ const cors = require('cors')
 const kue = require('kue')
 const port = 3000 || process.env.PORT
 const gmailAuth = require('./helpers/gettoken')
-const sendMail = require('./helpers/sendmail')
+const sendMail = require('./helpers/sendmail').sendMail
 const fs = require('fs')
 
 const app = express()
+const queue = kue.createQueue()
 
 /* App config */
 app.use(cors())
 
-/* App Routes */
+/* Gmail API Get Authorization Url */
 app.get('/g/mail/auth', (req, res)=> {
 
   gmailAuth.getAuth((err, auth)=> {
@@ -50,13 +51,55 @@ app.get('/g/mail', (req,res)=> {
   })
 })
 
-let queue = kue.createQueue()
+let emails = [
+  {email: 'anthonyjuan95@gmail.com'},
+  {email: 'andra.satria1@gmail.com'},
+  {email: 'laksono.suryadi@gmail.com'}
+]
 
-new CronJob('*/5 * 11 11 3 *', ()=> {
+/* Cron Job */
+app.get('/g/mail/cron', (req, res)=> {
 
-}, ()=> {
+  new CronJob('*/10 * * 11 3 *', ()=> {
 
-}, true, 'Asia/Jakarta')
+    let job = queue.create('sender', emails).save((err)=> {
+      !err ? console.log('Job created: '+job.id) : console.log('Job failed')
+    })
+    queue.process('sender', (job, done)=> {
+      sender(job.data, done)
+      console.log('CronJob working on background')
+    })
+
+  }, null, true, 'Asia/Jakarta')
+})
+
+
+function sender(mailist, done) {
+  if(!mailist) {
+    return done(new Error('No email address provided'))
+  } else {
+    gmailAuth.getAuth((err, auth)=> {
+      fs.readFile('gmail-credentials.json', (err, token)=> {
+        if(err) {
+          console.log('Error reading gmail-credentials')
+        } else {
+          auth.credentials = JSON.parse(token)
+
+          mailist.forEach((data)=> {
+            sendMail(auth, data.email, (err, result)=> {
+              if(err) {
+                console.log('Error sending mail : ', err)
+              } else {
+                console.log('Email sent to :'+data.email)
+              }
+            })
+          })
+        }
+      })
+    })
+    done()
+  }
+}
 
 
 /* Port Listen */
