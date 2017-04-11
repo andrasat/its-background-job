@@ -1,0 +1,29 @@
+{
+  "name": "its-background-job",
+  "version": "1.0.0",
+  "description": "Learning background job with cron, kue, and gmail api",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrasat/its-background-job.git"
+  },
+  "author": "Andra Satria <andra.satria1@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andrasat/its-background-job/issues"
+  },
+  "homepage": "https://github.com/andrasat/its-background-job#readme",
+  "dependencies": {
+    "cors": "^2.8.3",
+    "cron": "^1.2.1",
+    "express": "^4.15.2",
+    "google-auth-library": "^0.10.0",
+    "googleapis": "^19.0.0",
+    "kue": "^0.11.5"
+  }
+}
